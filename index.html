@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- v7 increases the number of annotations in the viz-->
+<html lang="en">
+	<head>
+		<title>three.js webgl - OBJLoader + MTLLoader</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+			#info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+			#threeCanvas {
+				position: absolute;
+				z-index: 99;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="threeCanvas"></canvas>
+		<div id="info">
+		MOVE mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan
+		</div>
+
+		<script src="js/three.min.js"></script>
+		<script src="js/TrackballControls.js"></script>
+		<script src="js/DDSLoader.js"></script>
+		<script src="js/MTLLoader.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/stats.min.js"></script>
+		<script src='js/threex.objcoord.js'></script>
+		<script src='js/Projector.js'></script>
+		<script src='js/main.js'></script>
+
+	</body>
+</html>
