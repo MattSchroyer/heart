@@ -3,33 +3,43 @@
 	var camera, scene, renderer;
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
+	var raycaster;
+	var mouse;
+	var heartPart;
+	var heartIsOpen;
+	var aortaPin;
 	
 	// set up the canvas on which to draw the locator line
+	// MUST NOT be below init() and animate()
 	var lineCanvas = document.createElement( 'canvas' );
-	lineCanvas.id = "lineCanvas";
+	lineCanvas.id = "dotsCanvas";
 	lineCanvas.width = window.innerWidth;
 	lineCanvas.height = window.innerHeight;
 	lineCanvas.style.position = "absolute";
 	lineCanvas.style.zIndex = "101";
+	lineCanvas.style.display = "inline";
 	document.body.appendChild(lineCanvas);
 	
-	var raycaster;
-	var mouse;
-	var objects = [];
-	
+	// creating pin vectors
+	var allMyPins = [];
+	allMyPins.push(
+		new THREE.Vector3(-4.044027262032927, 4.219614694564475, -1.2308631918325883),
+		new THREE.Vector3(-3.4000000000000004, 7.600000000000003, 2.5999999999999996),
+		new THREE.Vector3(-4.200000000000001, 0.7999999999999987, 3.4000000000000004),
+		new THREE.Vector3(-5.000000000000002, 3.1999999999999993, 1.3999999999999995),
+		new THREE.Vector3(1.0000000000000004, 2.3999999999999986, 6.000000000000002),
+		new THREE.Vector3(-2.1999999999999993, 6.000000000000002, -4.800000000000003)
+		);
+
 	init();
 	animate();
 	
-	
 	function init() {
-		container = document.createElement( 'div' );
-		document.body.appendChild( container );
-		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-		//camera.position.x = -2.072;
-		//camera.position.y = -4.191;
-		//camera.position.z = 2.923;
-
 		
+		// camera
+		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+		camera.position.x= -42.54404597864378; camera.position.y= 4.095160583665006; camera.position.z= -1.2896749071128895;
+
 		// controls
 		controls = new THREE.TrackballControls( camera );
 		controls.rotateSpeed = 1.0;
@@ -40,17 +50,32 @@
 		controls.staticMoving = true;
 		controls.dynamicDampingFactor = 0.3;
 		controls.keys = [ 65, 83, 68 ];
-		controls.addEventListener( 'change', render );
+		controls.addEventListener( 'change', render ); 
 		
 		// scene
 		scene = new THREE.Scene();
 		var ambient = new THREE.AmbientLight( 0x444444 );
 		scene.add( ambient );
-		var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-		directionalLight.position.set( 0, 0, 1 ).normalize();
-		scene.add( directionalLight );
+		var directionalLight1 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight1.position.set( 0, 0, 1 ).normalize();
+		var directionalLight2 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight2.position.set( 0, 0, -1 ).normalize();
+		var directionalLight3 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight3.position.set( 1, 0, 0).normalize();
+		var directionalLight4 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight4.position.set( -1, 0, 0 ).normalize();
+		var directionalLight5 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight5.position.set( 0, 1, 0 ).normalize();
+		var directionalLight6 = new THREE.DirectionalLight( 0xffeedd, 0.7 );
+		directionalLight6.position.set( 0, -1, 0 ).normalize();
+		scene.add( directionalLight1 );
+		scene.add( directionalLight2 );
+		scene.add( directionalLight3 );
+		scene.add( directionalLight4 );			
+		scene.add( directionalLight5 );
+		scene.add( directionalLight6 );
 		
-		// model
+		// models
 		var onProgress = function ( xhr ) {
 			if ( xhr.lengthComputable ) {
 				var percentComplete = xhr.loaded / xhr.total * 100;
@@ -58,217 +83,75 @@
 			}
 		};
 		var onError = function ( xhr ) { };
+		
 		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 		var mtlLoader = new THREE.MTLLoader();
 		mtlLoader.setBaseUrl( 'models/' );
 		mtlLoader.setPath( 'models/' );
-		mtlLoader.load( 'heart1.mtl', function( materials ) {
+		mtlLoader.load( 'openheartLD1.mtl', function( materials ) {
 			materials.preload();
 			var objLoader = new THREE.OBJLoader();
 			objLoader.setMaterials( materials );
 			objLoader.setPath( 'models/' );
-			objLoader.load( 'heart1.obj', function ( object ) {
-				object.name = 'myHeart';
-				object.position.y = - 5;
-				console.log(object);
-				console.log('Object name is: ' + object.name);
+			objLoader.load( 'openheartLD1.obj', function ( object ) {
+				object.position.x = 32;
+				object.position.y = -3;
+				object.position.z = 3;
+				object.rotation.x = -1.6;
+				object.name = 'openHeart';
 				scene.add( object );
 			}, onProgress, onError );
 		});
-		scene.getObjectById(2, true).name = 'myHeart';
 		
-		camera.position.x= 0.08140657541040912; camera.position.y= -6.534570564010448; camera.position.z= 0.5446630749390854;
-		// Don't actually need camera rotation, but here are some parameters I experimented with (unsuccessfully)
-		//camera.rotation.x= 1.1018754723144317; camera.rotation.y= 0.09926632857527733; camera.rotation.z= -0.18679317164723086;
+		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+		var mtlLoader2 = new THREE.MTLLoader();
+		mtlLoader2.setBaseUrl( 'models/' );
+		mtlLoader2.setPath( 'models/' );
+		mtlLoader2.load( 'heartpartLD1.mtl', function( materials ) {
+			materials.preload();
+			var objLoader2 = new THREE.OBJLoader();
+			objLoader2.setMaterials( materials );
+			objLoader2.setPath( 'models/' );
+			objLoader2.load( 'heartpartLD1.obj', function ( object ) {
+				object.position.x= -7.600000000000003; object.position.y= -9.399999999999999; object.position.z= 24.199999999999946;
+				object.rotation.x= -1.6000000000000008; object.rotation.y= 0.44999999999999996; object.rotation.z= 0.05000000000000002;
+				object.scale.x= 3.949999999999994; object.scale.y= 3.949999999999994; object.scale.z= 3.949999999999994;
+				object.name = 'heartPart';
+				scene.add( object );
+			}, onProgress, onError );
+		});
+		heartPart = scene.getObjectByName('heartPart', true);
+		heartIsOpen = false;
+
+		camera.position.z = 5;
 		
+		// container
+		container = document.createElement( 'div' );
+		document.body.appendChild( container );
 		
+		// renderer three.js in canvas
 		var threeCanvas = document.getElementById('threeCanvas');
 		renderer = new THREE.WebGLRenderer({canvas: threeCanvas});
-		threeCanvas.style.width  = window.innerWidth + "px";
-		threeCanvas.style.height = window.innerHeight + "px";
+		threeCanvas.width  = window.innerWidth;
+		threeCanvas.height = window.innerHeight;
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize( window.innerWidth, window.innerHeight );
-		//container.appendChild( renderer.domElement );
 		
-		//
+		// stats
 		stats = new Stats();
 		stats.domElement.style.position = 'absolute';
 		stats.domElement.style.top = '0px';
 		stats.domElement.style.zIndex = 100;
 		container.appendChild( stats.domElement );
-		//
+		
+		// window resize
 		window.addEventListener( 'resize', onWindowResize, false );
-		//
-		
-		// creating annotation dom element
-		createLabels();
-				
-		// listens for mousclicks
-		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		raycaster = new THREE.Raycaster();
-		mouse = new THREE.Vector2();								
-		
-		render();
-		
-	}
-	
-	function createLabels() {
-		var vector = new THREE.Vector3();
-		vector.set(0.32439835976926124, 0.4659299449117693, 1.0080319877748256);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var label1 = document.createElement( 'div' );
-		label1.id = 'laa';
-		label1.class = 'label';
-		label1.style.position = 'absolute';
-		label1.innerHTML = 'Left auricular appendage';
-		label1.style.position = "absolute";
-		label1.style.zIndex = "102";
-		label1.style.left  = (vector.x * 1.2)+'px';
-		label1.style.top   = (vector.y * 1.2)+'px';
-		document.body.appendChild( label1 );
-		
-		vector.set(-0.2490632366203533, 0.3975958775920736, 1.4497165957669103);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var label2 = document.createElement( 'div' );
-		label2.id = 'pa';
-		label2.class = 'label';
-		label2.style.position = 'absolute';
-		label2.innerHTML = 'Pulmonary artery';
-		label2.style.position = "absolute";
-		label2.style.zIndex = "102";
-		label2.style.left  = (vector.x * 1.3)+'px';
-		label2.style.top   = (vector.y * 0.8)+'px';
-		document.body.appendChild( label2 );
-		
-		vector.set(-0.9782747692948786, 0.5888642911536701, 1.40313434534541);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var label3 = document.createElement( 'div' );
-		label3.id = 'a';
-		label3.class = 'label';
-		label3.style.position = 'absolute';
-		label3.innerHTML = 'Aorta';
-		label3.style.position = "absolute";
-		label3.style.zIndex = "102";
-		label3.style.left  = (vector.x * 0.8)+'px';
-		label3.style.top   = (vector.y * 0.8)+'px';
-		document.body.appendChild( label3 );
-		
-		vector.set(-1.4269804664219996, 0.8598959397784895, 2.1614441023287947);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var label4 = document.createElement( 'div' );
-		label4.id = 'vcs';
-		label4.class = 'label';
-		label4.style.position = 'absolute';
-		label4.innerHTML = 'Vena cava superior';
-		label4.style.position = "absolute";
-		label4.style.zIndex = "102";
-		label4.style.left  = (vector.x * 0.8)+'px';
-		label4.style.top   = (vector.y * 0.8)+'px';
-		document.body.appendChild( label4 );
-		
-		vector.set(-0.2360958679351592, 0.8085302215104377, 2.4726643143975773);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var label5 = document.createElement( 'div' );
-		label5.id = 'aoa';
-		label5.class = 'label';
-		label5.style.position = 'absolute';
-		label5.innerHTML = 'Arch of the aorta';
-		label5.style.position = "absolute";
-		label5.style.zIndex = "102";
-		label5.style.left  = (vector.x * 1.2)+'px';
-		label5.style.top   = (vector.y * 1.2)+'px';
-		document.body.appendChild( label5 );
-	}
-	
-	function redrawLabels() {		
-		// drawing line for left auricular appendage
-		var vector = new THREE.Vector3();
-		vector.set(0.32439835976926124, 0.4659299449117693, 1.0080319877748256);
-		vector.project( camera );
-		canvas = document.getElementById("lineCanvas");
-		// canvas.width resets the canvas
-		canvas.width = canvas.width;
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		vector.z = 0;
-		var ctx=canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.moveTo(vector.x,vector.y);
-		ctx.lineTo((vector.x * 1.2),(vector.y * 1.2) + 20);
-		ctx.strokeStyle="#FF0000";
-		ctx.stroke();
-		// relocate laa label
-		var label1 = document.getElementById('laa');
-		label1.style.left  = (vector.x * 1.2)+'px';
-		label1.style.top   = (vector.y * 1.2)+'px';
-		
-		vector.set(-0.2490632366203533, 0.3975958775920736, 1.4497165957669103);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var ctx=canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.moveTo(vector.x,vector.y);
-		ctx.lineTo((vector.x * 1.3),(vector.y * 0.8) + 20);
-		ctx.strokeStyle="#FF0000";
-		ctx.stroke();
-		var label2 = document.getElementById('pa');
-		label2.style.left  = (vector.x * 1.3)+'px';
-		label2.style.top   = (vector.y * 0.8)+'px';
-		
-		vector.set(-0.9782747692948786, 0.5888642911536701, 1.40313434534541);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var ctx=canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.moveTo(vector.x,vector.y);
-		ctx.lineTo((vector.x * 0.8),(vector.y * 0.8) + 20);
-		ctx.strokeStyle="#FF0000";
-		ctx.stroke();
-		var label3 = document.getElementById('a');
-		label3.style.left  = (vector.x * 0.8)+'px';
-		label3.style.top   = (vector.y * 0.8)+'px';
-		
-		vector.set(-1.4269804664219996, 0.8598959397784895, 2.1614441023287947);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var ctx=canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.moveTo(vector.x,vector.y);
-		ctx.lineTo((vector.x * 0.8),(vector.y * 0.8) + 20);
-		ctx.strokeStyle="#FF0000";
-		ctx.stroke();
-		var label4 = document.getElementById('vcs');
-		label4.style.left  = (vector.x * 0.8)+'px';
-		label4.style.top   = (vector.y * 0.8)+'px';
-		
-		vector.set(-0.2360958679351592, 0.8085302215104377, 2.4726643143975773);
-		vector.project( camera );
-		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
-		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
-		var ctx=canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.moveTo(vector.x,vector.y);
-		ctx.lineTo((vector.x * 1.2),(vector.y * 1.2) + 20);
-		ctx.strokeStyle="#FF0000";
-		ctx.stroke();
-		var label5 = document.getElementById('aoa');
-		label5.style.left  = (vector.x * 1.2)+'px';
-		label5.style.top   = (vector.y * 1.2)+'px';
-	}
 
+		raycaster = new THREE.Raycaster();
+		mouse = new THREE.Vector2();
+		
+	}
+	
 	function onWindowResize() {
 		windowHalfX = window.innerWidth / 2;
 		windowHalfY = window.innerHeight / 2;
@@ -276,29 +159,109 @@
 		camera.updateProjectionMatrix();
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		controls.handleResize();
-		render();
+		animate();
 	}
-	//
+
 	function animate() {
 		requestAnimationFrame( animate );
-		// remove render from final version
-		//render();
 		controls.update();
+		TWEEN.update();
+		if (document.getElementById("dotsCanvas").style.display == "inline") {
+			checkDots();
+		}
+		render();
 	}
-	//
+	
 	function render() {
 		renderer.render( scene, camera );
 		stats.update();
-		redrawLabels();
+
 	}
 	
-	function onDocumentMouseDown( event ){
-		event.preventDefault();
-		mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-		mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
-		raycaster.setFromCamera( mouse, camera );
-		var myHeart = scene.getObjectByName('myHeart', true);
-		var intersects = raycaster.intersectObject( myHeart, true );
-		// raycaster returns an array of intersections [ { distance, point, face, faceIndex, indices, object }, ... ]
-		console.log( intersects );
+	function checkDots() {
+	// Go back, find 2d point of this 3d object, cast ray from that 2d point, see if hits openheart?
+		// Caution: rays cast go right through objects!
+		// Can cast a ray from pin straight at camera?
+		var vector = new THREE.Vector3();
+		var openHeart = scene.getObjectByName('openHeart', true);
+		var origin;
+		var i;
+		var canvas = document.getElementById("dotsCanvas");
+		canvas.width = canvas.width;
+		vector.set(camera.position.x, camera.position.y, camera.position.z);
+		for (i in allMyPins) {
+			origin = allMyPins[i].clone();
+			// turns vector into a directional vector pointing from origin to camera
+			vector.sub(origin).normalize();
+			raycaster.set( origin, vector );
+			var intersects = raycaster.intersectObject( openHeart, true );
+			if (intersects.length > 0) {
+				//console.log("marker invisible!");
+			}
+			else {
+				createDots(origin, i);
+			}
+			vector.set(camera.position.x, camera.position.y, camera.position.z);
+		}
+	}
+	
+	function createDots( myVector, i ) {
+		var vector = myVector.clone();
+		vector.project( camera );
+		var canvas = document.getElementById("dotsCanvas");
+		vector.x = Math.round( (   vector.x + 1 ) * window.innerWidth  / 2 );
+		vector.y = Math.round( ( - vector.y + 1 ) * window.innerHeight / 2 );
+		vector.z = 0;
+		var ctx = canvas.getContext("2d");
+		ctx.beginPath();
+		ctx.arc(vector.x,vector.y,15,0,2*Math.PI);
+		ctx.fillStyle = "#FF0000";
+		ctx.fill();
+		// now add the number to the dot
+		i++;
+		text = i;
+		var font = "bold " + 16 + "px monospace";
+		ctx.font = font;
+		var width = ctx.measureText(text).width;
+		var height = ctx.measureText("w").width;
+		ctx.fillStyle = "white";
+		ctx.fillText(text, vector.x - (width/2), vector.y + (height/2));
+	}
+	
+	function hideDots() {
+		var allDots = document.getElementById("dotsCanvas");
+		if (allDots.style.display == "inline") {
+			allDots.style.display = "none";
+		}
+		else {
+			allDots.style.display = "inline";
+		}
+	}
+	
+	function movePart() {
+		console.log("on the move!");
+		console.log("Heart is open? " + heartIsOpen);
+		heartPart = scene.getObjectByName('heartPart', true);
+		
+		if (heartIsOpen == false){
+			var tween1 = new TWEEN.Tween(heartPart.rotation)
+			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
+			.start();
+			var tween2 = new TWEEN.Tween(heartPart.position)
+			.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
+			.onComplete(function(){heartIsOpen = true;})
+			.start();
+			animate();
+		}
+		
+		if (heartIsOpen == true){
+			var tween1 = new TWEEN.Tween(heartPart.rotation)
+			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
+			.start();
+			animate();
+			var tween2 = new TWEEN.Tween(heartPart.position)
+			.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
+			.onComplete(function(){heartIsOpen = false;})
+			.start();
+		}
 	}
