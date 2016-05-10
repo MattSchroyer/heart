@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!-- oheart6 adds and checks annotations programmatically -->
+
+<html lang="en">
+	<head>
+		<title>three.js webgl - OBJLoader + MTLLoader</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+			
+			#activate {
+				color: #fff;
+				position: absolute;
+				top: 50px;
+				left: 20px;
+				width: 100%;
+				z-index: 103;
+				display:block;
+			}
+			
+			#partList {
+				color: #fff;
+				position: absolute;
+				top: 200px;
+				left: 20px;
+				width: 100%;
+				text-align: left;
+				z-index: 100;
+				display:block;
+				font-size: 16px;
+			}
+			
+			#info a {
+				color: #f00;
+				font-weight: bold;
+				text-decoration: underline;
+				cursor: pointer
+			}
+			
+			.button {
+				background-color: #4CAF50;
+				border: none;
+				color: white;
+				padding: 15px 32px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 16px;
+				font-family: Monospace;
+			}
+			
+			#threeCanvas {
+				position: absolute;
+				z-index: 99;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="threeCanvas"></canvas>
+		<div id="info">
+		<a href="http://threejs.org" target="_blank">three.js</a> MOVE mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan
+		</div>
+		
+		<div id="activate">
+		<button type="button" class="button" onclick="movePart()">Open/Close Heart</button>
+		<br>
+		<br>
+		<button type="button" class="button" onclick="hideDots()">Hide/Show Dots</button>
+		</div>
+		
+		<div id="partList">
+		1. Aorta <br>
+		2. Arch of the aorta <br>
+		3. Left auricular appendage <br>
+		4. Pulmonary artery <br>
+		5. Pulmonary veins <br>
+		6. Vena cava superior <br>
+		</div>
+
+		<script src="js/three.min.js"></script>
+		<script src="js/TrackballControls.js"></script>
+		<script src="js/DDSLoader.js"></script>
+		<script src="js/MTLLoader.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/stats.min.js"></script>
+		<script src="js/Tween.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
