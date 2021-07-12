@@ -1,3 +1,5 @@
+	const BASE_URL = 'http://mattschroyer.github.io/heart/models/';
+	
 	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 	var container, stats;
 	var camera, scene, renderer;
@@ -86,13 +88,14 @@
 		
 		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 		var mtlLoader = new THREE.MTLLoader();
-		mtlLoader.setBaseUrl( 'models/' );
-		mtlLoader.setPath( 'models/' );
+		mtlLoader.setBaseUrl(BASE_URL);
+		mtlLoader.setPath(BASE_URL);
+		mtlLoader.setCrossOrigin('anonymous');
 		mtlLoader.load( 'openheartLD1.mtl', function( materials ) {
 			materials.preload();
 			var objLoader = new THREE.OBJLoader();
 			objLoader.setMaterials( materials );
-			objLoader.setPath( 'models/' );
+			objLoader.setPath(BASE_URL);
 			objLoader.load( 'openheartLD1.obj', function ( object ) {
 				object.position.x = 32;
 				object.position.y = -3;
@@ -105,13 +108,14 @@
 		
 		THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 		var mtlLoader2 = new THREE.MTLLoader();
-		mtlLoader2.setBaseUrl( 'models/' );
-		mtlLoader2.setPath( 'models/' );
+		mtlLoader2.setBaseUrl(BASE_URL);
+		mtlLoader2.setPath(BASE_URL);
+		mtlLoader.setCrossOrigin('anonymous');
 		mtlLoader2.load( 'heartpartLD1.mtl', function( materials ) {
 			materials.preload();
 			var objLoader2 = new THREE.OBJLoader();
 			objLoader2.setMaterials( materials );
-			objLoader2.setPath( 'models/' );
+			objLoader2.setPath(BASE_URL);
 			objLoader2.load( 'heartpartLD1.obj', function ( object ) {
 				object.position.x= -7.600000000000003; object.position.y= -9.399999999999999; object.position.z= 24.199999999999946;
 				object.rotation.x= -1.6000000000000008; object.rotation.y= 0.44999999999999996; object.rotation.z= 0.05000000000000002;
@@ -239,29 +243,29 @@
 	}
 	
 	function movePart() {
-		console.log("on the move!");
-		console.log("Heart is open? " + heartIsOpen);
 		heartPart = scene.getObjectByName('heartPart', true);
 		
-		if (heartIsOpen == false){
-			var tween1 = new TWEEN.Tween(heartPart.rotation)
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
-			.start();
-			var tween2 = new TWEEN.Tween(heartPart.position)
-			.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
-			.onComplete(function(){heartIsOpen = true;})
-			.start();
-			animate();
+		if (heartIsOpen){
+			const tween1 = new TWEEN.Tween(heartPart.rotation);
+			tween1
+				.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
+				.start();
+			const tween2 = new TWEEN.Tween(heartPart.position);
+			tween2
+				.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
+				.onComplete(function(){heartIsOpen = false;})
+				.start();
+			
+		} else {
+			const tween1 = new TWEEN.Tween(heartPart.rotation);
+			tween1
+				.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
+				.start();
+			const tween2 = new TWEEN.Tween(heartPart.position);
+			tween2
+				.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
+				.onComplete(function(){heartIsOpen = true;})
+				.start();
 		}
-		
-		if (heartIsOpen == true){
-			var tween1 = new TWEEN.Tween(heartPart.rotation)
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
-			.start();
-			animate();
-			var tween2 = new TWEEN.Tween(heartPart.position)
-			.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
-			.onComplete(function(){heartIsOpen = false;})
-			.start();
-		}
+		animate();
 	}
