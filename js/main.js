@@ -243,29 +243,29 @@
 	}
 	
 	function movePart() {
-		console.log("on the move!");
-		console.log("Heart is open? " + heartIsOpen);
 		heartPart = scene.getObjectByName('heartPart', true);
 		
-		if (heartIsOpen == false){
-			var tween1 = new TWEEN.Tween(heartPart.rotation)
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
-			.start();
-			var tween2 = new TWEEN.Tween(heartPart.position)
-			.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
-			.onComplete(function(){heartIsOpen = true;})
-			.start();
-			animate();
+		if (heartIsOpen){
+			const tween1 = new TWEEN.Tween(heartPart.rotation);
+			tween1
+				.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
+				.start();
+			const tween2 = new TWEEN.Tween(heartPart.position);
+			tween2
+				.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
+				.onComplete(function(){heartIsOpen = false;})
+				.start();
+			
+		} else {
+			const tween1 = new TWEEN.Tween(heartPart.rotation);
+			tween1
+				.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
+				.start();
+			const tween2 = new TWEEN.Tween(heartPart.position);
+			tween2
+				.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
+				.onComplete(function(){heartIsOpen = true;})
+				.start();
 		}
-		
-		if (heartIsOpen == true){
-			var tween1 = new TWEEN.Tween(heartPart.rotation)
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
-			.start();
-			animate();
-			var tween2 = new TWEEN.Tween(heartPart.position)
-			.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
-			.onComplete(function(){heartIsOpen = false;})
-			.start();
-		}
+		animate();
 	}
