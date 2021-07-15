@@ -14,7 +14,7 @@ let controls;
 let raycaster;
 let mouse;
 let heartPart;
-let heartIsOpen;
+let heartIsOpen = false;
 
 // set up the canvas on which to draw the locator line
 // MUST NOT be below init() and animate()
@@ -221,30 +221,22 @@ function hideDots() {
 
 function movePart() {
 	heartPart = scene.getObjectByName('heartPart', true);
+
+	const openZ = Math.PI / 2;
+	const closedZ = 0.05;
 	
-	if (heartIsOpen){
-		const tween1 = new TWEEN.Tween(heartPart.rotation);
-		tween1
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 0.05000000000000002 }, 1000)
-			.start();
-		const tween2 = new TWEEN.Tween(heartPart.position);
-		tween2
-			.to({ x: -7.600000000000003, y: -9.399999999999999, z: 24.199999999999946 }, 1000)
-			.onComplete(function(){heartIsOpen = false;})
-			.start();
-		
-	} else {
-		const tween1 = new TWEEN.Tween(heartPart.rotation);
-		tween1
-			.to({ x: -1.6000000000000008, y: 0.44999999999999996, z: 3.099999999999997 }, 1000)
-			.start();
-		const tween2 = new TWEEN.Tween(heartPart.position);
-		tween2
-			.to({ x: 3.4000000000000026, y: -14.999999999999979, z: -6.200000000000005 }, 1000)
-			.onComplete(function(){heartIsOpen = true;})
-			.start();
-	}
-	animate();
+	const rotateCoords = {
+		z: heartIsOpen ? openZ : closedZ,
+	};
+
+	const tween1 = new TWEEN.Tween(rotateCoords);
+	tween1
+		.to({z: heartIsOpen ? closedZ : openZ}, 1000)
+		.onUpdate(() => {
+			heartPart.rotation.z = rotateCoords.z;
+		})
+		.onComplete(() => heartIsOpen = !heartIsOpen)
+		.start();
 }
 
 function createControls(camera) {
